@@ -9,7 +9,7 @@ pub extern "C" fn game_engine_engine_new() -> *mut game::engine::Engine {
 
 #[no_mangle]
 pub extern "C" fn game_engine_engine_input(engine_ptr: *mut game::engine::Engine, keys: u8) {
-    (unsafe { &*engine_ptr }).input(keys);
+    (unsafe { &mut *engine_ptr }).input(keys);
 }
 
 #[no_mangle]

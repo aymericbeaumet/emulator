@@ -19,7 +19,7 @@ const lib = ffi.Library(path.join(__dirname, `../target/${mode}/libcore`), {
 module.exports = {
   game: {
     engine: {
-      Engine: class {
+      Engine: class Engine {
         constructor() {
           this._self = lib.game_engine_engine_new();
         }

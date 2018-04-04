@@ -8,19 +8,22 @@ pub struct Screen {
 
 impl Screen {
   pub fn new(width: usize, height: usize) -> Self {
-    let mut screen = Screen {
+    Screen {
       width,
       height,
       pixels: vec![0; RGBA * width * height],
-    };
-    for i in 0..screen.pixels.len() {
-      if (i + 1) % 4 == 0 {
-        screen.pixels[i] = 100; // A
-      } else {
-        screen.pixels[i] = 0x33; // R, G, B
+    }
+  }
+
+  pub fn fill(&mut self, r: u8, g: u8, b: u8, a: u8) {
+    for i in 0..self.pixels.len() {
+      if (i % 4) == 0 {
+        self.pixels[i + 0] = r;
+        self.pixels[i + 1] = g;
+        self.pixels[i + 2] = b;
+        self.pixels[i + 3] = a;
       }
     }
-    screen
   }
 
   pub fn dump(&mut self) -> (*mut u8, usize, usize) {

@@ -13,9 +13,16 @@ impl Engine {
     }
   }
 
-  pub fn input(&self, keys: u8) {
+  pub fn input(&mut self, keys: u8) {
     if keys != 0 {
       println!("keys: {:>08b}", keys);
+    }
+    if keys & (1 << 0) != 0 {
+      self.screen.fill(0xec, 0xd0, 0x25, 100);
+    } else if keys & (1 << 1) != 0 {
+      self.screen.fill(0xce, 0xce, 0xce, 100);
+    } else {
+      self.screen.fill(0xff, 0xff, 0xff, 100);
     }
   }
 

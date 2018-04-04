@@ -21,13 +21,14 @@ export default class Game extends React.Component {
     super();
     this._engine = new core.game.engine.Engine();
     this._scale = 2;
+    // watch keys
     this._keys = {};
-    window.addEventListener("keyup", event => {
+    this._onKeyUp = event => {
       this._keys[event.keyCode] = 0;
-    });
-    window.addEventListener("keydown", event => {
+    };
+    this._onKeyDown = event => {
       this._keys[event.keyCode] = 1;
-    });
+    };
   }
 
   render() {
@@ -41,11 +42,15 @@ export default class Game extends React.Component {
   componentDidMount() {
     if (!this._frameId) {
       this._frameId = this._loop();
+      window.addEventListener("keyup", this._onKeyUp);
+      window.addEventListener("keydown", this._onKeyDown);
     }
   }
 
   componentWillUnmount() {
     window.cancelAnimationFrame(this._frameId);
+    window.removeEventListener("keyup", this._onKeyUp);
+    window.removeEventListener("keydown", this._onKeyDown);
     this._engine.delete();
   }
 
