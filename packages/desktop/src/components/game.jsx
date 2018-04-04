@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 
-import Core from "core";
+import core from "core";
 
 const Style = styled.div`
   width: 100%;
@@ -19,10 +19,15 @@ const Style = styled.div`
 export default class Game extends React.Component {
   constructor() {
     super();
-    this._core = new Core();
-    this._width = 160;
-    this._height = 144;
+    this._engine = new core.game.engine.Engine();
     this._scale = 2;
+    this._keys = {};
+    window.addEventListener("keyup", event => {
+      this._keys[event.keyCode] = 0;
+    });
+    window.addEventListener("keydown", event => {
+      this._keys[event.keyCode] = 1;
+    });
   }
 
   render() {
@@ -41,31 +46,44 @@ export default class Game extends React.Component {
 
   componentWillUnmount() {
     window.cancelAnimationFrame(this._frameId);
-    this._core.delete();
+    this._engine.delete();
   }
 
   _loop() {
-    this._core.input();
-    this._core.update();
-    this._core.render(() => {
-      this._draw();
+    this._engine.input(
+      (this._keys[16] << 0) | // select (shift)
+      (this._keys[32] << 1) | // start (spacebar)
+      (this._keys[37] << 2) | // left
+      (this._keys[38] << 3) | // up
+      (this._keys[39] << 4) | // right
+      (this._keys[40] << 5) | // down
+      (this._keys[65] << 6) | // a
+      (this._keys[66] << 7) | // b
+        0
+    );
+    this._engine.update();
+    this._engine.render((pixels, width, height) => {
+      this._draw(pixels, width, height);
     });
     return (this._frameId = window.requestAnimationFrame(() => this._loop()));
   }
 
-  _draw() {
+  _draw(pixels, width, height) {
     const canvas = document.getElementById("screen");
     if (canvas) {
-      canvas.width = this._width * this._scale;
-      canvas.height = this._height * this._scale;
+      canvas.width = width * this._scale;
+      canvas.height = height * this._scale;
       const context = canvas.getContext("2d");
       context.scale(this._scale, this._scale);
-      for (let j = 0; j < this._height; j += 1) {
-        for (let i = 0; i < this._width; i += 1) {
-          if ((i + j) % 2) {
-            context.fillStyle = "rgba(50,50,50,0.5)";
-            context.fillRect(i, j, 1, 1);
-          }
+      for (let j = 0; j < height; j += 1) {
+        for (let i = 0; i < width; i += 1) {
+          const index = 4 * (j * width + i);
+          const r = pixels[index + 0];
+          const g = pixels[index + 1];
+          const b = pixels[index + 2];
+          const a = pixels[index + 3];
+          context.fillStyle = `rgba(${r},${g},${b},${a / 100})`;
+          context.fillRect(i, j, 1, 1);
         }
       }
     }

@@ -8,32 +8,47 @@ const voidPtr = ref.refType(ref.types.void);
 const self = voidPtr;
 const callback = voidPtr;
 
-const libcore = ffi.Library(path.join(__dirname, `../target/${mode}/libcore`), {
-  new: [self, []],
-  input: [ref.types.void, [self]],
-  update: [ref.types.void, [self]],
-  render: [ref.types.void, [self, callback]],
-  delete: [ref.types.void, [self]]
+const lib = ffi.Library(path.join(__dirname, `../target/${mode}/libcore`), {
+  game_engine_engine_new: [self, []],
+  game_engine_engine_input: [ref.types.void, [self, ref.types.uint8]],
+  game_engine_engine_update: [ref.types.void, [self]],
+  game_engine_engine_render: [ref.types.void, [self, callback]],
+  game_engine_engine_delete: [ref.types.void, [self]]
 });
 
-module.exports = class Core {
-  constructor() {
-    this._self = libcore.new();
-  }
+module.exports = {
+  game: {
+    engine: {
+      Engine: class {
+        constructor() {
+          this._self = lib.game_engine_engine_new();
+        }
 
-  input() {
-    libcore.input(this._self);
-  }
+        input(keys) {
+          lib.game_engine_engine_input(this._self, keys);
+        }
 
-  update() {
-    libcore.update(this._self);
-  }
+        update() {
+          lib.game_engine_engine_update(this._self);
+        }
 
-  render(callback) {
-    libcore.render(this._self, ffi.Callback(ref.types.void, [], callback));
-  }
+        render(callback) {
+          lib.game_engine_engine_render(
+            this._self,
+            ffi.Callback(
+              ref.types.void,
+              [voidPtr, ref.types.size_t, ref.types.size_t],
+              (pixels, width, height) => {
+                callback(pixels.reinterpret(width * height), width, height);
+              }
+            )
+          );
+        }
 
-  delete() {
-    libcore.delete(this._self);
+        delete() {
+          lib.game_engine_engine_delete(this._self);
+        }
+      }
+    }
   }
 };

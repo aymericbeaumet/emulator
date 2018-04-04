@@ -1,50 +1,31 @@
+mod game;
+
 use std::boxed::Box;
 
-pub struct Core {}
-
-impl Core {
-    fn new() -> Self {
-        Core {}
-    }
-
-    fn input(&self) {}
-
-    fn update(&self) {}
-
-    fn render(&self, callback: fn()) {
-        callback();
-    }
-}
-
-impl Drop for Core {
-    fn drop(&mut self) {}
-}
-
-/*
- * C bindings
- */
-
 #[no_mangle]
-pub extern "C" fn new() -> *mut Core {
-    Box::into_raw(Box::new(Core::new()))
+pub extern "C" fn game_engine_engine_new() -> *mut game::engine::Engine {
+    Box::into_raw(Box::new(game::engine::Engine::new()))
 }
 
 #[no_mangle]
-pub extern "C" fn input(core_ptr: *mut Core) {
-    (unsafe { &*core_ptr }).input();
+pub extern "C" fn game_engine_engine_input(engine_ptr: *mut game::engine::Engine, keys: u8) {
+    (unsafe { &*engine_ptr }).input(keys);
 }
 
 #[no_mangle]
-pub extern "C" fn update(core_ptr: *mut Core) {
-    (unsafe { &*core_ptr }).update();
+pub extern "C" fn game_engine_engine_update(engine_ptr: *mut game::engine::Engine) {
+    (unsafe { &*engine_ptr }).update();
 }
 
 #[no_mangle]
-pub extern "C" fn render(core_ptr: *mut Core, callback: fn()) {
-    (unsafe { &*core_ptr }).render(callback);
+pub extern "C" fn game_engine_engine_render(
+    engine_ptr: *mut game::engine::Engine,
+    callback: fn(*mut u8, usize, usize),
+) {
+    (unsafe { &mut *engine_ptr }).render(callback);
 }
 
 #[no_mangle]
-pub extern "C" fn delete(core_ptr: *mut Core) {
-    unsafe { Box::from_raw(core_ptr) };
+pub extern "C" fn game_engine_engine_delete(engine_ptr: *mut game::engine::Engine) {
+    unsafe { Box::from_raw(engine_ptr) };
 }
