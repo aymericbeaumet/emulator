@@ -1,15 +1,15 @@
 pub struct Screen {
+  pixels: Vec<u32>,
   width: usize,
   height: usize,
-  pixels: Vec<u32>,
 }
 
 impl Screen {
   pub fn new(width: usize, height: usize) -> Self {
     Screen {
+      pixels: vec![0; width * height],
       width,
       height,
-      pixels: vec![0; width * height],
     }
   }
 

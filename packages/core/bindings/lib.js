@@ -9,26 +9,26 @@ const self = voidPtr;
 const callback = voidPtr;
 
 const lib = ffi.Library(path.join(__dirname, `../target/${mode}/libcore`), {
-  game_engine_engine_new: [self, []],
-  game_engine_engine_input: [ref.types.void, [self, ref.types.uint8]],
-  game_engine_engine_render: [ref.types.void, [self, callback]],
-  game_engine_engine_delete: [ref.types.void, [self]]
+  GameBoyColor_new: [self, []],
+  GameBoyColor_input: [ref.types.void, [self, ref.types.uint8]],
+  GameBoyColor_render: [ref.types.void, [self, callback]],
+  GameBoyColor_delete: [ref.types.void, [self]]
 });
 
 module.exports = {
-  game: {
-    engine: {
-      Engine: class Engine {
+  emulators: {
+    gameboycolor: {
+      GameBoyColor: class GameBoyColor {
         constructor() {
-          this._self = lib.game_engine_engine_new();
+          this._self = lib.GameBoyColor_new();
         }
 
         input(inputs) {
-          lib.game_engine_engine_input(this._self, inputs);
+          lib.GameBoyColor_input(this._self, inputs);
         }
 
         render(callback) {
-          lib.game_engine_engine_render(
+          lib.GameBoyColor_render(
             this._self,
             ffi.Callback(
               ref.types.void,
@@ -45,7 +45,7 @@ module.exports = {
         }
 
         delete() {
-          lib.game_engine_engine_delete(this._self);
+          lib.GameBoyColor_delete(this._self);
         }
       }
     }

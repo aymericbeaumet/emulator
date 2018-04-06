@@ -1,26 +1,34 @@
-mod game;
+mod emulators;
+mod screen;
 
 use std::boxed::Box;
 
 #[no_mangle]
-pub extern "C" fn game_engine_engine_new() -> *mut game::engine::Engine {
-    Box::into_raw(Box::new(game::engine::Engine::new()))
+#[allow(non_snake_case)]
+pub extern "C" fn GameBoyColor_new() -> *mut emulators::gameboycolor::GameBoyColor {
+    Box::into_raw(Box::new(emulators::gameboycolor::GameBoyColor::new()))
 }
 
 #[no_mangle]
-pub extern "C" fn game_engine_engine_input(engine_ptr: *mut game::engine::Engine, inputs: u8) {
+#[allow(non_snake_case)]
+pub extern "C" fn GameBoyColor_input(
+    engine_ptr: *mut emulators::gameboycolor::GameBoyColor,
+    inputs: u8,
+) {
     (unsafe { &mut *engine_ptr }).input(inputs);
 }
 
 #[no_mangle]
-pub extern "C" fn game_engine_engine_render(
-    engine_ptr: *mut game::engine::Engine,
+#[allow(non_snake_case)]
+pub extern "C" fn GameBoyColor_render(
+    engine_ptr: *mut emulators::gameboycolor::GameBoyColor,
     callback: fn(*mut u32, usize, usize),
 ) {
     (unsafe { &mut *engine_ptr }).render(callback);
 }
 
 #[no_mangle]
-pub extern "C" fn game_engine_engine_delete(engine_ptr: *mut game::engine::Engine) {
+#[allow(non_snake_case)]
+pub extern "C" fn GameBoyColor_delete(engine_ptr: *mut emulators::gameboycolor::GameBoyColor) {
     unsafe { Box::from_raw(engine_ptr) };
 }

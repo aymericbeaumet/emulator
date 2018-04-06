@@ -9,6 +9,7 @@ const Style = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #272727;
 
   canvas {
     border: 30px solid black;
@@ -17,18 +18,15 @@ const Style = styled.div`
 `;
 
 export default class Game extends React.Component {
-  constructor() {
+  constructor({ keyboard }) {
     super();
-    this._engine = new core.game.engine.Engine();
+    this._emulator = new core.emulators.gameboycolor.GameBoyColor();
+    this._keyboard = keyboard;
     this._scale = 2;
-    // watch keys
-    this._keys = {};
-    this._onKeyUp = event => {
-      this._keys[event.keyCode] = 0;
-    };
-    this._onKeyDown = event => {
-      this._keys[event.keyCode] = 1;
-    };
+  }
+
+  shouldComponentUpdate() {
+    return false;
   }
 
   render() {
@@ -41,37 +39,39 @@ export default class Game extends React.Component {
 
   componentDidMount() {
     if (!this._frameId) {
-      this._frameId = this._loop();
-      window.addEventListener("keyup", this._onKeyUp);
-      window.addEventListener("keydown", this._onKeyDown);
+      this._loop();
     }
   }
 
   componentWillUnmount() {
     window.cancelAnimationFrame(this._frameId);
-    window.removeEventListener("keyup", this._onKeyUp);
-    window.removeEventListener("keydown", this._onKeyDown);
-    this._engine.delete();
+    this._emulator.delete();
   }
 
   _loop() {
-    this._engine.input(this._getKeyboard());
-    this._engine.render((pixels, width, height) => {
+    if (window.__stats__) {
+      window.__stats__.begin();
+    }
+    this._emulator.input(this._getKeyboard());
+    this._emulator.render((pixels, width, height) => {
       this._draw(pixels, width, height);
     });
-    return (this._frameId = window.requestAnimationFrame(() => this._loop()));
+    if (window.__stats__) {
+      window.__stats__.end();
+    }
+    this._frameId = window.requestAnimationFrame(() => this._loop());
   }
 
   _getKeyboard() {
     return (
-      (this._keys[16] << 0) | // select (shift)
-      (this._keys[32] << 1) | // start (spacebar)
-      (this._keys[37] << 2) | // left
-      (this._keys[38] << 3) | // up
-      (this._keys[39] << 4) | // right
-      (this._keys[40] << 5) | // down
-      (this._keys[65] << 6) | // a
-      (this._keys[66] << 7) | // b
+      (this._keyboard[16] << 0) | // select (shift)
+      (this._keyboard[32] << 1) | // start (spacebar)
+      (this._keyboard[37] << 2) | // left
+      (this._keyboard[38] << 3) | // up
+      (this._keyboard[39] << 4) | // right
+      (this._keyboard[40] << 5) | // down
+      (this._keyboard[65] << 6) | // a
+      (this._keyboard[66] << 7) | // b
       0
     );
   }
@@ -80,16 +80,18 @@ export default class Game extends React.Component {
     const canvas = document.getElementById("screen");
     if (canvas) {
       if (
-        !(
-          this._lastScale === this.scale &&
-          this._lastWidth === width &&
-          this._lastHeight === height
-        )
+        this._lastScale !== this.scale ||
+        this._lastWidth !== width ||
+        this._lastHeight !== height
       ) {
         canvas.width = width;
-        canvas.height = height;
         canvas.style.width = `${width * this._scale}px`;
+        canvas.style.minWidth = canvas.style.width;
+        canvas.style.maxWidth = canvas.style.width;
+        canvas.height = height;
         canvas.style.height = `${height * this._scale}px`;
+        canvas.style.minHeight = canvas.style.height;
+        canvas.style.maxHeight = canvas.style.height;
         this._lastScale = this._scale;
         this._lastWidth = width;
         this._lastHeight = height;

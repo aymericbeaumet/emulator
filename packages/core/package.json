@@ -6,7 +6,8 @@
   "scripts": {
     "postinstall": "yarn build:debug",
     "build:debug": "cargo build --frozen",
-    "build:release": "cargo build --frozen --release"
+    "build:release": "cargo build --frozen --release",
+    "clean": "cargo clean"
   },
   "dependencies": {
     "ffi": "2.2.0",

@@ -1,14 +1,12 @@
-mod screen;
+use screen::Screen;
 
-use self::screen::Screen;
-
-pub struct Engine {
+pub struct GameBoyColor {
   screen: Screen,
 }
 
-impl Engine {
+impl GameBoyColor {
   pub fn new() -> Self {
-    Engine {
+    GameBoyColor {
       screen: Screen::new(160, 144),
     }
   }
@@ -32,6 +30,6 @@ impl Engine {
   }
 }
 
-impl Drop for Engine {
+impl Drop for GameBoyColor {
   fn drop(&mut self) {}
 }
