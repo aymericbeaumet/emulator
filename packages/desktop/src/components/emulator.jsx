@@ -1,7 +1,8 @@
+import _ from "lodash";
 import React from "react";
 import styled from "styled-components";
-
 import core from "core";
+import eventPreventDefault from "../utils/event-prevent-default";
 
 const Style = styled.div`
   width: 100%;
@@ -17,12 +18,40 @@ const Style = styled.div`
   }
 `;
 
+const DEFAULT_SCALE = 2;
+const MIN_SCALE = 1;
+const MAX_SCALE = 4;
+const SCALE_STEP = 0.5;
+
 export default class Game extends React.Component {
-  constructor({ keyboard }) {
+  constructor({ ipc, keyboard, scale = DEFAULT_SCALE }) {
     super();
-    this._emulator = new core.emulators.gameboycolor.GameBoyColor();
+    this._ipc = ipc;
     this._keyboard = keyboard;
-    this._scale = 2;
+    this._scale = scale;
+
+    this._onIPCAccelerator = (channel, accelerator) => {
+      switch (accelerator) {
+        case "ACTUAL_SIZE":
+          this._scale = DEFAULT_SCALE;
+          break;
+        case "ZOOM_IN":
+          this._scale = _.min([MAX_SCALE, this._scale + SCALE_STEP]);
+          break;
+        case "ZOOM_OUT":
+          this._scale = _.max([MIN_SCALE, this._scale - SCALE_STEP]);
+          break;
+      }
+    };
+
+    this._onDrop = event => {
+      event.preventDefault();
+      const [file] = event.dataTransfer.files || [];
+      if (file) {
+        this._emulator.load(file.path);
+      }
+      return false;
+    };
   }
 
   shouldComponentUpdate() {
@@ -38,12 +67,19 @@ export default class Game extends React.Component {
   }
 
   componentDidMount() {
-    if (!this._frameId) {
-      this._loop();
-    }
+    this._emulator = new core.emulators.gameboycolor.GameBoyColor();
+    this._loop();
+    this._ipc.on("accelerator", this._onIPCAccelerator);
+    window.document.addEventListener("dragover", eventPreventDefault);
+    window.document.addEventListener("drop", eventPreventDefault);
+    window.document.body.addEventListener("drop", this._onDrop);
   }
 
   componentWillUnmount() {
+    window.document.body.removeEventListener("drop", this._onDrop);
+    window.document.removeEventListener("drop", eventPreventDefault);
+    window.document.removeEventListener("dragover", eventPreventDefault);
+    this._ipc.removeListener("accelerator", this._onIPCAccelerator);
     window.cancelAnimationFrame(this._frameId);
     this._emulator.delete();
   }

@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 
-import Game from "./Game";
+import Emulator from "./emulator";
+import withIPC from "../hoc/with-ipc";
 import withKeyboard from "../hoc/with-keyboard";
 
-const GameWithKeyboard = withKeyboard(Game);
+const EnhancedEmulator = withIPC(withKeyboard(Emulator));
 
 const Style = styled.div`
   width: 100%;
@@ -15,7 +16,7 @@ export default class App extends React.Component {
   render() {
     return (
       <Style>
-        <GameWithKeyboard />
+        <EnhancedEmulator />
       </Style>
     );
   }

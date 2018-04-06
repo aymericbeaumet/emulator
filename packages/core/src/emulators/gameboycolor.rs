@@ -11,9 +11,13 @@ impl GameBoyColor {
     }
   }
 
+  pub fn load(&self, filepath: &str) {
+    println!("load: {}", filepath)
+  }
+
   pub fn input(&mut self, inputs: u8) {
     if inputs != 0 {
-      println!("inputs: {:>08b}", inputs);
+      println!("input: {:>08b}", inputs);
     }
     if inputs & (1 << 0) != 0 {
       self.screen.fill(0xec, 0xd0, 0x25, 0xff);
