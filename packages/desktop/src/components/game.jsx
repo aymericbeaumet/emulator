@@ -55,7 +55,15 @@ export default class Game extends React.Component {
   }
 
   _loop() {
-    this._engine.input(
+    this._engine.input(this._getKeyboard());
+    this._engine.render((pixels, width, height) => {
+      this._draw(pixels, width, height);
+    });
+    return (this._frameId = window.requestAnimationFrame(() => this._loop()));
+  }
+
+  _getKeyboard() {
+    return (
       (this._keys[16] << 0) | // select (shift)
       (this._keys[32] << 1) | // start (spacebar)
       (this._keys[37] << 2) | // left
@@ -64,33 +72,31 @@ export default class Game extends React.Component {
       (this._keys[40] << 5) | // down
       (this._keys[65] << 6) | // a
       (this._keys[66] << 7) | // b
-        0
+      0
     );
-    this._engine.update();
-    this._engine.render((pixels, width, height) => {
-      this._draw(pixels, width, height);
-    });
-    return (this._frameId = window.requestAnimationFrame(() => this._loop()));
   }
 
   _draw(pixels, width, height) {
     const canvas = document.getElementById("screen");
     if (canvas) {
-      canvas.width = width * this._scale;
-      canvas.height = height * this._scale;
-      const context = canvas.getContext("2d");
-      context.scale(this._scale, this._scale);
-      for (let j = 0; j < height; j += 1) {
-        for (let i = 0; i < width; i += 1) {
-          const index = 4 * (j * width + i);
-          const r = pixels[index + 0];
-          const g = pixels[index + 1];
-          const b = pixels[index + 2];
-          const a = pixels[index + 3];
-          context.fillStyle = `rgba(${r},${g},${b},${a / 100})`;
-          context.fillRect(i, j, 1, 1);
-        }
+      if (
+        !(
+          this._lastScale === this.scale &&
+          this._lastWidth === width &&
+          this._lastHeight === height
+        )
+      ) {
+        canvas.width = width;
+        canvas.height = height;
+        canvas.style.width = `${width * this._scale}px`;
+        canvas.style.height = `${height * this._scale}px`;
+        this._lastScale = this._scale;
+        this._lastWidth = width;
+        this._lastHeight = height;
       }
+      this._imageData = this._imageData || new ImageData(width, height);
+      this._imageData.data.set(pixels);
+      canvas.getContext("2d").putImageData(this._imageData, 0, 0);
     }
   }
 }

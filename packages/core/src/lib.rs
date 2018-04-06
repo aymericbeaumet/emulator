@@ -8,19 +8,14 @@ pub extern "C" fn game_engine_engine_new() -> *mut game::engine::Engine {
 }
 
 #[no_mangle]
-pub extern "C" fn game_engine_engine_input(engine_ptr: *mut game::engine::Engine, keys: u8) {
-    (unsafe { &mut *engine_ptr }).input(keys);
-}
-
-#[no_mangle]
-pub extern "C" fn game_engine_engine_update(engine_ptr: *mut game::engine::Engine) {
-    (unsafe { &*engine_ptr }).update();
+pub extern "C" fn game_engine_engine_input(engine_ptr: *mut game::engine::Engine, inputs: u8) {
+    (unsafe { &mut *engine_ptr }).input(inputs);
 }
 
 #[no_mangle]
 pub extern "C" fn game_engine_engine_render(
     engine_ptr: *mut game::engine::Engine,
-    callback: fn(*mut u8, usize, usize),
+    callback: fn(*mut u32, usize, usize),
 ) {
     (unsafe { &mut *engine_ptr }).render(callback);
 }
