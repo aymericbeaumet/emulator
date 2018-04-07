@@ -15,8 +15,8 @@ impl Screen {
 
   pub fn fill(&mut self, r: u8, g: u8, b: u8, a: u8) {
     let rgba = (r as u32) << 0 | (g as u32) << 8 | (b as u32) << 16 | (a as u32) << 24;
-    for i in 0..self.pixels.len() {
-      self.pixels[i] = rgba
+    for pixel in &mut self.pixels.iter_mut() {
+      *pixel = rgba
     }
   }
 
