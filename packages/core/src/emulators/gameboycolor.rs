@@ -11,8 +11,8 @@ impl GameBoyColor {
     }
   }
 
-  pub fn load(&self, filepath: &str) {
-    println!("load: {}", filepath)
+  pub fn boot_with_file_path(&self, file_path: &str) {
+    println!("boot_with_file_path: {}", file_path)
   }
 
   pub fn input(&mut self, inputs: u8) {

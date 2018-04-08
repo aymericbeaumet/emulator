@@ -10,15 +10,6 @@
         margin: 0;
         padding: 0;
       }
-
-      #__stats__ {
-        pointer-events: none;
-      }
-
-      #__stats__ > canvas {
-        float: left;
-        display: block !important;
-      }
     </style>
   </head>
   <body>
@@ -26,23 +17,12 @@
   </body>
 
   <script type="text/jsx">
-  import Stats from 'stats.js';
   import React from 'react';
   import ReactDOM from 'react-dom';
   import { AppContainer } from 'react-hot-loader';
-  import { webFrame } from 'electron';
-
-  // Disable zoom
-  webFrame.setVisualZoomLevelLimits(1, 1);
-  webFrame.setLayoutZoomLevelLimits(0, 0);
-
-  // Display stats
-  window.__stats__ = new Stats();
-  window.__stats__.dom.id = '__stats__';
-  document.body.appendChild(window.__stats__.dom);
 
   function render() {
-    const App = require('./components/app').default;
+    const App = require('./renderer/components/app').default;
     ReactDOM.render(<AppContainer><App /></AppContainer>, document.getElementById('container'));
   }
 

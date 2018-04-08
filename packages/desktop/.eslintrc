@@ -1,10 +1,18 @@
 {
-  "extends": "eslint-config-airbnb",
+  "parser": "babel-eslint",
+  "env": {
+      "browser": true,
+      "node": true
+  },
+  "extends": [
+    "eslint-config-airbnb",
+    "plugin:prettier/recommended"
+  ],
   "rules": {
-    "import/extensions": 0,
-    "import/no-extraneous-dependencies": 0,
-    "import/no-unresolved": [2, { "ignore": ["electron"] }],
-    "linebreak-style": 0,
-    "react/prefer-stateless-function": 0
+    "strict": "off",
+    "no-bitwise": "off",
+    "no-underscore-dangle": "off",
+    "import/no-extraneous-dependencies": "off",
+    "import/no-unresolved": ["error", { "ignore": ["electron"] }]
   }
 }

@@ -10,7 +10,7 @@ const callback = voidPtr;
 
 const lib = ffi.Library(path.join(__dirname, `../target/${mode}/libcore`), {
   GameBoyColor_new: [self, []],
-  GameBoyColor_load: [ref.types.void, [self, ref.types.CString]],
+  GameBoyColor_boot_with_file_path: [ref.types.void, [self, ref.types.CString]],
   GameBoyColor_input: [ref.types.void, [self, ref.types.uint8]],
   GameBoyColor_render: [ref.types.void, [self, callback]],
   GameBoyColor_delete: [ref.types.void, [self]]
@@ -24,8 +24,8 @@ module.exports = {
           this._self = lib.GameBoyColor_new();
         }
 
-        load(filepath) {
-          lib.GameBoyColor_load(this._self, filepath);
+        boot_with_file_path(file_path) {
+          lib.GameBoyColor_boot_with_file_path(this._self, file_path);
         }
 
         input(inputs) {

@@ -4,24 +4,22 @@ import installExtension, {
 } from "electron-devtools-installer";
 import { enableLiveReload } from "electron-compile";
 import menu from "./menu";
+import isDevMode from "./utils/isDevMode";
 
 let mainWindow;
 
-const isDevMode = process.execPath.match(/[\\/]electron/);
-
-if (isDevMode) enableLiveReload({ strategy: "react-hmr" });
+if (isDevMode) {
+  enableLiveReload({ strategy: "react-hmr" });
+}
 
 const createWindow = async () => {
   mainWindow = new BrowserWindow();
   mainWindow.maximize();
-
   mainWindow.loadURL(`file://${__dirname}/index.html`);
-
   if (isDevMode) {
     await installExtension(REACT_DEVELOPER_TOOLS);
     mainWindow.webContents.openDevTools();
   }
-
   mainWindow.on("closed", () => {
     mainWindow = null;
   });
