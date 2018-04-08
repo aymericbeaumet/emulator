@@ -1,18 +1,27 @@
+use std::io::prelude::*;
+use std::fs::File;
+
 use screen::Screen;
 
 pub struct GameBoyColor {
   screen: Screen,
+  cartridge: Vec<u8>,
 }
 
 impl GameBoyColor {
   pub fn new() -> Self {
     GameBoyColor {
       screen: Screen::new(160, 144),
+      cartridge: Vec::new(),
     }
   }
 
-  pub fn boot_with_file_path(&self, file_path: &str) {
-    println!("boot_with_file_path: {}", file_path)
+  pub fn boot_with_file_path(&mut self, file_path: &str) {
+    File::open(file_path)
+      .expect("Cannot open cartridge")
+      .read_to_end(&mut self.cartridge)
+      .expect("Cannot read cartridge");
+    // TODO: start CPU
   }
 
   pub fn input(&mut self, inputs: u8) {

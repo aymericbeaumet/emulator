@@ -18,7 +18,7 @@ pub extern "C" fn GameBoyColor_boot_with_file_path(
     filepath: *const c_char,
 ) {
     let filepath = (unsafe { CStr::from_ptr(filepath) }).to_str().unwrap();
-    (unsafe { &*emulator_ptr }).boot_with_file_path(filepath);
+    (unsafe { &mut *emulator_ptr }).boot_with_file_path(filepath);
 }
 
 #[no_mangle]
