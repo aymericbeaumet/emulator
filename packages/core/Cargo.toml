@@ -1,8 +1,0 @@
-[package]
-publish = false
-name = "core"
-version = "0.1.0"
-
-[lib]
-name = "core"
-crate-type = ["cdylib"]

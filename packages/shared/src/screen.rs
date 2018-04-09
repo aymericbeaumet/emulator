@@ -1,12 +1,12 @@
-pub struct Screen {
+pub struct ColorDepth32Bit {
   pixels: Vec<u32>,
   width: usize,
   height: usize,
 }
 
-impl Screen {
+impl ColorDepth32Bit {
   pub fn new(width: usize, height: usize) -> Self {
-    Screen {
+    ColorDepth32Bit {
       pixels: vec![0; width * height],
       width,
       height,
@@ -25,6 +25,6 @@ impl Screen {
   }
 }
 
-impl Drop for Screen {
+impl Drop for ColorDepth32Bit {
   fn drop(&mut self) {}
 }

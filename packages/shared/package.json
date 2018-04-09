@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "name": "shared",
+  "version": "0.1.0",
+  "main": "bindings/lib.js",
+  "scripts": {
+    "postinstall": "yarn build:debug",
+    "build:debug": "cargo build",
+    "build:release": "cargo build --release",
+    "clean": "cargo clean"
+  },
+  "dependencies": {
+    "ffi": "2.2.0",
+    "ref": "1.3.5"
+  }
+}

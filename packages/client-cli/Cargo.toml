@@ -1,0 +1,8 @@
+[package]
+publish = false
+name = "client-cli"
+version = "0.1.0"
+
+[dependencies]
+shared = { path = "../shared" }
+clap = "2.31.2"

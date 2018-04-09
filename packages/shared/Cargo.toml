@@ -1,0 +1,10 @@
+[package]
+publish = false
+name = "shared"
+version = "0.1.0"
+
+[lib]
+name = "shared"
+crate-type = ["lib", "cdylib"]
+
+[dependencies]
