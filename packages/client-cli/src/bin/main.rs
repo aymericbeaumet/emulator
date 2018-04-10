@@ -2,7 +2,7 @@ extern crate clap;
 extern crate shared;
 
 use clap::{App, Arg};
-use shared::emulators::gameboycolor::GameBoyColor;
+use shared::emulators::game_boy_color::GameBoyColor;
 
 pub fn main() {
     let matches = App::new("client-cli")
