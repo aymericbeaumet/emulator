@@ -5,7 +5,7 @@
 // use std::os::raw::c_char;
 
 pub mod emulators;
-pub mod screen;
+mod screen;
 
 // #[no_mangle]
 // #[allow(non_snake_case)]

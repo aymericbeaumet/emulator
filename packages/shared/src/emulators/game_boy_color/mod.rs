@@ -4,7 +4,6 @@ mod registers;
 
 use std::fs::File;
 use std::io::prelude::*;
-use std::mem::size_of_val;
 use std::thread::sleep;
 use std::time::Duration;
 use std::time::Instant;
@@ -18,20 +17,16 @@ pub struct GameBoyColor {
   cartridge: Vec<u8>,
   memory_map: MemoryMap,
   registers: Registers,
-  processor: Processor,
   cycle_duration_nanos: u64,
   // screen: ColorDepth32Bit,
 }
 
 impl GameBoyColor {
   pub fn new() -> Self {
-    let mut memory_map = MemoryMap::new();
-    let mut registers = Registers::new();
     GameBoyColor {
       cartridge: Vec::new(),
-      memory_map,
-      registers,
-      processor: Processor::new(&mut registers, &mut memory_map),
+      memory_map: MemoryMap::new(),
+      registers: Registers::new(),
       cycle_duration_nanos: (1_000_000_000. / (4.194 * 1_000_000.)) as u64,
       // screen: ColorDepth32Bit::new(160, 144),
     }
@@ -46,12 +41,12 @@ impl GameBoyColor {
 
   pub fn boot(&mut self) {
     self.memory_map.write(0x0000, include_bytes!("./bios.gbc"));
+    self.registers.reset();
     loop {
       self.registers.dump();
       let time = Instant::now();
-      let cycles = self.processor.process_instruction();
+      let cycles = Processor::next(&mut self.registers, &mut self.memory_map);
       let elapsed = time.elapsed();
-      // Adjust to stay aligned with original hardware frequency
       let elapsed_nanos = elapsed.as_secs() * 1_000_000_000 + elapsed.subsec_nanos() as u64;
       let supposedly_elapsed_nanos = (cycles as u64) * self.cycle_duration_nanos;
       if supposedly_elapsed_nanos > elapsed_nanos {
