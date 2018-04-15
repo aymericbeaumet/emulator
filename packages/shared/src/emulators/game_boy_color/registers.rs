@@ -140,6 +140,45 @@ impl Registers {
     self.hl = Registers::set_low_byte(self.hl, value);
   }
 
+  pub fn get_bc(&self) -> u16 {
+    self.bc
+  }
+
+  pub fn set_bc(&mut self, value: u16) {
+    self.bc = value
+  }
+
+  pub fn get_de(&self) -> u16 {
+    self.de
+  }
+
+  pub fn set_de(&mut self, value: u16) {
+    self.de = value
+  }
+  pub fn get_hl(&self) -> u16 {
+    self.hl
+  }
+
+  pub fn set_hl(&mut self, value: u16) {
+    self.hl = value
+  }
+
+  pub fn get_sp(&self) -> u16 {
+    self.sp
+  }
+
+  pub fn set_sp(&mut self, value: u16) {
+    self.sp = value
+  }
+
+  pub fn get_pc(&self) -> u16 {
+    self.pc
+  }
+
+  pub fn set_pc(&mut self, value: u16) {
+    self.pc = value
+  }
+
   pub fn get_flag(&self, flag: Flag) -> bool {
     let mask = 1 << flag.position();
     (self.get_f() & mask) != 0
