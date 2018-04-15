@@ -100,9 +100,9 @@ macro_rules! instruction {
       operands::Void,
       operands::Void,
     >>::instruction($r, $mm,
-        operands::Void::Type,
-        operands::Void::Type,
-      )
+      operands::Void::Type,
+      operands::Void::Type,
+    )
   );
 
   // Arity 1
@@ -113,9 +113,9 @@ macro_rules! instruction {
       operands::$op1_type,
       operands::Void,
     >>::instruction($r, $mm,
-        operands::$op1_type::Type,
-        operands::Void::Type,
-      )
+      operands::$op1_type::Type,
+      operands::Void::Type,
+    )
   );
 
   {$r:expr, $mm:expr => $mnemonic:ident $op1_literal:expr} => (
@@ -124,9 +124,9 @@ macro_rules! instruction {
       operands::Literal,
       operands::Void,
     >>::instruction($r, $mm,
-        $op1_literal,
-        operands::Void::Type,
-      )
+      $op1_literal,
+      operands::Void::Type,
+    )
   );
 
   // Arity 2
@@ -137,9 +137,9 @@ macro_rules! instruction {
       operands::$op1_type,
       operands::$op2_type,
     >>::instruction($r, $mm,
-        operands::$op1_type::Type,
-        operands::$op2_type::Type,
-      )
+      operands::$op1_type::Type,
+      operands::$op2_type::Type,
+    )
   );
 
   {$r:expr, $mm:expr => $mnemonic:ident ($op1_type:ident), $op2_type:ident} => (
