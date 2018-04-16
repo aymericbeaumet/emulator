@@ -9,7 +9,7 @@ mod xor;
 
 use std::mem::size_of_val;
 
-use super::memory_map::MemoryMap;
+use super::memory_map::{FromMemoryMap, MemoryMap};
 use super::registers::Registers;
 
 pub type Opcode = u8;
@@ -753,20 +753,20 @@ impl Processor {
   // }
 
   fn eat_opcode(r: &mut Registers, mm: &MemoryMap) -> Opcode {
-    let ret = mm.read_u8(r.pc);
+    let ret: u8 = mm.read(r.pc);
     println!("[0x{:04X}] 0x{:02X}", r.pc, ret);
     r.pc += size_of_val(&ret) as u16;
     ret
   }
 
   fn eat_u8(r: &mut Registers, mm: &MemoryMap) -> u8 {
-    let ret = mm.read_u8(r.pc);
+    let ret: u8 = mm.read(r.pc);
     r.pc += size_of_val(&ret) as u16;
     ret
   }
 
   fn eat_u16(r: &mut Registers, mm: &MemoryMap) -> u16 {
-    let ret = mm.read_u16(r.pc);
+    let ret: u16 = mm.read(r.pc);
     r.pc += size_of_val(&ret) as u16;
     ret
   }
@@ -777,7 +777,7 @@ impl Processor {
   }
 
   fn stack_pop_u16(r: &mut Registers, mm: &mut MemoryMap) -> u16 {
-    let popped = mm.read_u16(r.sp);
+    let popped: u16 = mm.read(r.sp);
     r.sp += size_of_val(&popped) as u16;
     popped
   }
