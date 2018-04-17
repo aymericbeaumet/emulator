@@ -9,10 +9,9 @@ mod xor;
 
 use std::mem::size_of_val;
 
-use super::memory_map::{FromMemoryMap, MemoryMap};
+use super::memory_map::{FromMemoryMap, MemoryMap, ToMemoryMap};
 use super::registers::Registers;
 
-pub type Opcode = u8;
 pub type Cycle = u8;
 
 pub trait Instruction<T, U, V> {
@@ -190,12 +189,13 @@ macro_rules! instruction {
 pub struct Processor {}
 
 impl Processor {
-  pub fn next(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
+  pub fn step(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
     Processor::process_instruction(r, mm)
   }
 
   fn process_instruction(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
-    let opcode = Processor::eat_opcode(r, mm);
+    let opcode: u8 = Processor::eat(r, mm);
+    println!("[Opcode] 0x{:02X}", opcode);
     match opcode {
       // 0x00 => instruction!{r, mm => NOP},
       // 0x01 => instruction!{r, mm => LD (BC),D16},
@@ -474,7 +474,8 @@ impl Processor {
   }
 
   // fn process_instruction_cb(&mut self) -> u8 {
-  //   let opcode = self.eat_opcode();
+  //   let opcode = Processor::eat();
+  //   println!("[Opcode] 0x{:02X}", opcode);
   //   match opcode {
   // 0x00 => instruction!{r, mm => RLC B},
   // 0x01 => instruction!{r, mm => RLC C},
@@ -752,33 +753,34 @@ impl Processor {
   //   }
   // }
 
-  fn eat_opcode(r: &mut Registers, mm: &MemoryMap) -> Opcode {
-    let ret: u8 = mm.read(r.pc);
-    println!("[0x{:04X}] 0x{:02X}", r.pc, ret);
-    r.pc += size_of_val(&ret) as u16;
-    ret
-  }
-
-  fn eat_u8(r: &mut Registers, mm: &MemoryMap) -> u8 {
-    let ret: u8 = mm.read(r.pc);
-    r.pc += size_of_val(&ret) as u16;
-    ret
-  }
-
-  fn eat_u16(r: &mut Registers, mm: &MemoryMap) -> u16 {
-    let ret: u16 = mm.read(r.pc);
-    r.pc += size_of_val(&ret) as u16;
-    ret
-  }
-
   fn stack_push_u16(r: &mut Registers, mm: &mut MemoryMap, value: u16) {
     r.sp -= size_of_val(&value) as u16;
-    mm.write_u16(r.sp, value);
+    mm.write(r.sp, value);
   }
 
   fn stack_pop_u16(r: &mut Registers, mm: &mut MemoryMap) -> u16 {
     let popped: u16 = mm.read(r.sp);
     r.sp += size_of_val(&popped) as u16;
     popped
+  }
+}
+
+pub trait Eat<T> {
+  fn eat(r: &mut Registers, mm: &MemoryMap) -> T;
+}
+
+impl Eat<u8> for Processor {
+  fn eat(r: &mut Registers, mm: &MemoryMap) -> u8 {
+    let ret: u8 = mm.read(r.pc);
+    r.pc += size_of_val(&ret) as u16;
+    ret
+  }
+}
+
+impl Eat<u16> for Processor {
+  fn eat(r: &mut Registers, mm: &MemoryMap) -> u16 {
+    let ret: u16 = mm.read(r.pc);
+    r.pc += size_of_val(&ret) as u16;
+    ret
   }
 }

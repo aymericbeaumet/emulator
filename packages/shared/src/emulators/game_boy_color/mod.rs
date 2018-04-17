@@ -8,10 +8,12 @@ use std::thread::sleep;
 use std::time::Duration;
 use std::time::Instant;
 
-use self::memory_map::MemoryMap;
+use self::memory_map::{MemoryMap, ToMemoryMap};
 use self::processor::Processor;
 use self::registers::Registers;
 // use screen::ColorDepth32Bit;
+
+const BIOS: &'static [u8] = include_bytes!("./bios.gbc");
 
 pub struct GameBoyColor {
   cartridge: Vec<u8>,
@@ -40,12 +42,12 @@ impl GameBoyColor {
   }
 
   pub fn boot(&mut self) {
-    self.memory_map.write(0x0000, include_bytes!("./bios.gbc"));
+    self.memory_map.write(0x0000, BIOS);
     self.registers.reset();
     loop {
       self.registers.dump();
       let time = Instant::now();
-      let cycles = Processor::next(&mut self.registers, &mut self.memory_map);
+      let cycles = Processor::step(&mut self.registers, &mut self.memory_map);
       let elapsed = time.elapsed();
       let elapsed_nanos = elapsed.as_secs() * 1_000_000_000 + elapsed.subsec_nanos() as u64;
       let supposedly_elapsed_nanos = (cycles as u64) * self.cycle_duration_nanos;

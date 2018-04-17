@@ -195,7 +195,7 @@ impl Registers {
 
   pub fn dump(&self) {
     print!(
-      "AF=0x{:04X} (Z={}, N={}, H={}, C={})",
+      "[Registers] AF=0x{:04X} (Z={}, N={}, H={}, C={})",
       self.af,
       if self.get_flag(Flag::Z) { 1 } else { 0 },
       if self.get_flag(Flag::N) { 1 } else { 0 },
