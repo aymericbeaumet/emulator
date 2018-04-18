@@ -3,10 +3,6 @@
   "name": "client-cli",
   "version": "0.1.0",
   "scripts": {
-    "postinstall": "yarn build:debug",
-    "build:debug": "cargo build --frozen",
-    "build:release": "cargo build --frozen --release",
-    "start": "cargo run --bin main --",
-    "clean": "cargo clean"
+    "start": "cargo run --bin main --"
   }
 }

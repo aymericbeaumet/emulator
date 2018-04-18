@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "shared",
+  "name": "@emulator/shared",
   "version": "0.1.0",
   "main": "bindings/lib.js",
   "scripts": {

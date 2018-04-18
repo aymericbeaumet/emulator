@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "desktop",
+  "name": "@emulator/desktop",
   "productName": "Emu",
   "version": "1.0.0",
   "description": "My Electron application description",
@@ -48,7 +48,7 @@
     }
   },
   "dependencies": {
-    "core": "*",
+    "@emulator/shared": "*",
     "electron-compile": "6.4.2",
     "electron-devtools-installer": "2.2.3",
     "electron-squirrel-startup": "1.0.0",

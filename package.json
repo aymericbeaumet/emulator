@@ -10,5 +10,11 @@
       "**/electron-prebuilt-compile",
       "**/electron-prebuilt-compile/**"
     ]
+  },
+  "scripts": {
+    "preinstall": "cargo build",
+    "pretest": "cargo test",
+    "preclean": "cargo clean",
+    "clean": "rm -rf {,**/}node_modules"
   }
 }
