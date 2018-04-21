@@ -1,7 +1,7 @@
 # emulator
 
 ```
-yarn        # install dependencies and build
+yarn        # install and build dependencies
 yarn test   # run tests
-yarn clean  # clean all dependencies and builds
+yarn clean  # clean all dependencies
 ```

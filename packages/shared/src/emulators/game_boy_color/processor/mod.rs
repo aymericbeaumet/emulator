@@ -2,6 +2,7 @@ mod call;
 mod cpl;
 mod dec;
 mod jp;
+mod jr;
 mod ld;
 mod ldh;
 mod ldi;
@@ -23,6 +24,7 @@ pub mod instructions {
   pub enum CPL {}
   pub enum DEC {}
   pub enum JP {}
+  pub enum JR {}
   pub enum LD {}
   pub enum LDH {}
   pub enum LDI {}
@@ -82,6 +84,9 @@ pub mod operands {
     Type,
   }
   pub enum R8 {
+    Type,
+  }
+  pub enum NZ {
     Type,
   }
   pub type Literal = u8;
@@ -230,8 +235,7 @@ impl Processor {
     // 0x1D => instruction!{r, mm => DEC E},
     // 0x1E => instruction!{r, mm => LD E,D8},
     // 0x1F => instruction!{r, mm => RRA},
-
-    // 0x20 => instruction!{r, mm => JR NZ,R8},
+      0x20 => instruction!{r, mm => JR NZ,R8},
       0x21 => instruction!{r, mm => LD HL,D16},
       0x22 => instruction!{r, mm => LDI (HL),A},
       // 0x23 => instruction!{r, mm => INC HL},
@@ -781,6 +785,14 @@ impl Eat<u16> for Processor {
   fn eat(r: &mut Registers, mm: &MemoryMap) -> u16 {
     let ret: u16 = mm.read(r.pc);
     r.pc += size_of_val(&ret) as u16;
+    ret
+  }
+}
+
+impl Eat<i8> for Processor {
+  fn eat(r: &mut Registers, mm: &MemoryMap) -> i8 {
+    let ret: i8 = mm.read(r.pc);
+    r.pc += size_of_val(&ret) as u16 - 1;
     ret
   }
 }

@@ -7,10 +7,10 @@
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
+    "test": "eslint . && jest",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish",
-    "test": "eslint --cache --color src"
+    "publish": "electron-forge publish"
   },
   "keywords": [],
   "author": "aymericbeaumet",
