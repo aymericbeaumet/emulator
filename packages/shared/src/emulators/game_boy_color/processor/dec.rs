@@ -10,7 +10,7 @@ impl Instruction<DEC, C, Void> for Processor {
       _ => (c - 1, false),
     };
     r.set_c(c);
-    r.set_flag(Flag::Z, c != 0);
+    r.set_flag(Flag::Z, c == 0);
     r.set_flag(Flag::N, true);
     r.set_flag(Flag::H, h);
     4

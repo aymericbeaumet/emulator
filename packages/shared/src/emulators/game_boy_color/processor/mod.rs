@@ -1,11 +1,14 @@
+mod bit;
 mod call;
 mod cpl;
 mod dec;
+mod ei;
 mod jp;
 mod jr;
 mod ld;
 mod ldh;
 mod ldi;
+mod ret;
 mod xor;
 
 use std::mem::size_of_val;
@@ -20,14 +23,17 @@ pub trait Instruction<T, U, V> {
 }
 
 pub mod instructions {
+  pub enum BIT {}
   pub enum CALL {}
   pub enum CPL {}
   pub enum DEC {}
+  pub enum EI {}
   pub enum JP {}
   pub enum JR {}
   pub enum LD {}
   pub enum LDH {}
   pub enum LDI {}
+  pub enum RET {}
   pub enum XOR {}
 }
 
@@ -87,6 +93,9 @@ pub mod operands {
     Type,
   }
   pub enum NZ {
+    Type,
+  }
+  pub enum Z {
     Type,
   }
   pub type Literal = u8;
@@ -242,7 +251,7 @@ impl Processor {
       // 0x25 => instruction!{r, mm => DEC H},
       // 0x26 => instruction!{r, mm => LD H,D8},
       // 0x27 => instruction!{r, mm => DAA},
-      // 0x28 => instruction!{r, mm => JR Z,R8},
+      0x28 => instruction!{r, mm => JR Z,R8},
       // 0x29 => instruction!{r, mm => ADD HL,HL},
       // 0x2A => instruction!{r, mm => LDI A, (HL)},
       // 0x2B => instruction!{r, mm => DEC HL},
@@ -413,9 +422,9 @@ impl Processor {
       // 0xC6 => instruction!{r, mm => ADD A,D8},
       // 0xC7 => instruction!{r, mm => RST 0x00},
       // 0xC8 => instruction!{r, mm => RET Z},
-      // 0xC9 => instruction!{r, mm => RET},
+      0xC9 => instruction!{r, mm => RET},
       // 0xCA => instruction!{r, mm => JP Z,A16},
-      // 0xCB => self.process_instruction_cb(),
+      0xCB => Processor::process_instruction_cb(r, mm),
       // 0xCC => instruction!{r, mm => CALL Z,A16},
       0xCD => instruction!{r, mm => CALL A16},
       // 0xCE => instruction!{r, mm => ADC A,D8},
@@ -466,20 +475,20 @@ impl Processor {
     // 0xF8 => instruction!{r, mm => LDHL SP,R8},
     // 0xF9 => instruction!{r, mm => LD SP,HL},
     // 0xFA => instruction!{r, mm => LD A,(A16)},
-    // 0xFB => instruction!{r, mm => EI},
-    // /* 0xFC */
-    // /* 0xFD */
-    // 0xFE => instruction!{r, mm => CP D8},
-    // 0xFF => instruction!{r, mm => RST 0x38},
-    //
+      0xFB => instruction!{r, mm => EI},
+      // /* 0xFC */
+      // /* 0xFD */
+      // 0xFE => instruction!{r, mm => CP D8},
+      // 0xFF => instruction!{r, mm => RST 0x38},
+      //
       _ => panic!("Unsupported instruction 0x{:02X}", opcode),
     }
   }
 
-  // fn process_instruction_cb(&mut self) -> u8 {
-  //   let opcode = Processor::eat();
-  //   match opcode {
-  // 0x00 => instruction!{r, mm => RLC B},
+  fn process_instruction_cb(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
+    let opcode: u8 = Processor::eat(r, mm);
+    match opcode {
+      // 0x00 => instruction!{r, mm => RLC B},
   // 0x01 => instruction!{r, mm => RLC C},
   // 0x02 => instruction!{r, mm => RLC D},
   // 0x03 => instruction!{r, mm => RLC E},
@@ -551,16 +560,16 @@ impl Processor {
   // 0x41 => instruction!{r, mm => BIT 0,C},
   // 0x42 => instruction!{r, mm => BIT 0,D},
   // 0x43 => instruction!{r, mm => BIT 0,E},
-  // 0x44 => instruction!{r, mm => BIT 0,H},
-  // 0x45 => instruction!{r, mm => BIT 0,L},
-  // 0x46 => instruction!{r, mm => BIT 0,(HL)},
-  // 0x47 => instruction!{r, mm => BIT 0,A},
-  // 0x48 => instruction!{r, mm => BIT 1,B},
-  // 0x49 => instruction!{r, mm => BIT 1,C},
-  // 0x4A => instruction!{r, mm => BIT 1,D},
-  // 0x4B => instruction!{r, mm => BIT 1,E},
-  // 0x4C => instruction!{r, mm => BIT 1,H},
-  // 0x4D => instruction!{r, mm => BIT 1,L},
+      0x44 => instruction!{r, mm => BIT 0,H},
+      // 0x45 => instruction!{r, mm => BIT 0,L},
+      // 0x46 => instruction!{r, mm => BIT 0,(HL)},
+      // 0x47 => instruction!{r, mm => BIT 0,A},
+      // 0x48 => instruction!{r, mm => BIT 1,B},
+      // 0x49 => instruction!{r, mm => BIT 1,C},
+      // 0x4A => instruction!{r, mm => BIT 1,D},
+      // 0x4B => instruction!{r, mm => BIT 1,E},
+      0x4C => instruction!{r, mm => BIT 1,H},
+      // 0x4D => instruction!{r, mm => BIT 1,L},
   // 0x4E => instruction!{r, mm => BIT 1,(HL)},
   // 0x4F => instruction!{r, mm => BIT 1,A},
 
@@ -568,16 +577,16 @@ impl Processor {
   // 0x51 => instruction!{r, mm => BIT 2,C},
   // 0x52 => instruction!{r, mm => BIT 2,D},
   // 0x53 => instruction!{r, mm => BIT 2,E},
-  // 0x54 => instruction!{r, mm => BIT 2,H},
-  // 0x55 => instruction!{r, mm => BIT 2,L},
-  // 0x56 => instruction!{r, mm => BIT 2,(HL)},
-  // 0x57 => instruction!{r, mm => BIT 2,A},
-  // 0x58 => instruction!{r, mm => BIT 3,B},
-  // 0x59 => instruction!{r, mm => BIT 3,C},
-  // 0x5A => instruction!{r, mm => BIT 3,D},
-  // 0x5B => instruction!{r, mm => BIT 3,E},
-  // 0x5C => instruction!{r, mm => BIT 3,H},
-  // 0x5D => instruction!{r, mm => BIT 3,L},
+      0x54 => instruction!{r, mm => BIT 2,H},
+      // 0x55 => instruction!{r, mm => BIT 2,L},
+      // 0x56 => instruction!{r, mm => BIT 2,(HL)},
+      // 0x57 => instruction!{r, mm => BIT 2,A},
+      // 0x58 => instruction!{r, mm => BIT 3,B},
+      // 0x59 => instruction!{r, mm => BIT 3,C},
+      // 0x5A => instruction!{r, mm => BIT 3,D},
+      // 0x5B => instruction!{r, mm => BIT 3,E},
+      0x5C => instruction!{r, mm => BIT 3,H},
+      // 0x5D => instruction!{r, mm => BIT 3,L},
   // 0x5E => instruction!{r, mm => BIT 3,(HL)},
   // 0x5F => instruction!{r, mm => BIT 3,A},
 
@@ -585,16 +594,16 @@ impl Processor {
   // 0x61 => instruction!{r, mm => BIT 4,C},
   // 0x62 => instruction!{r, mm => BIT 4,D},
   // 0x63 => instruction!{r, mm => BIT 4,E},
-  // 0x64 => instruction!{r, mm => BIT 4,H},
-  // 0x65 => instruction!{r, mm => BIT 4,L},
-  // 0x66 => instruction!{r, mm => BIT 4,(HL)},
-  // 0x67 => instruction!{r, mm => BIT 4,A},
-  // 0x68 => instruction!{r, mm => BIT 5,B},
-  // 0x69 => instruction!{r, mm => BIT 5,C},
-  // 0x6A => instruction!{r, mm => BIT 5,D},
-  // 0x6B => instruction!{r, mm => BIT 5,E},
-  // 0x6C => instruction!{r, mm => BIT 5,H},
-  // 0x6D => instruction!{r, mm => BIT 5,L},
+      0x64 => instruction!{r, mm => BIT 4,H},
+      // 0x65 => instruction!{r, mm => BIT 4,L},
+      // 0x66 => instruction!{r, mm => BIT 4,(HL)},
+      // 0x67 => instruction!{r, mm => BIT 4,A},
+      // 0x68 => instruction!{r, mm => BIT 5,B},
+      // 0x69 => instruction!{r, mm => BIT 5,C},
+      // 0x6A => instruction!{r, mm => BIT 5,D},
+      // 0x6B => instruction!{r, mm => BIT 5,E},
+      0x6C => instruction!{r, mm => BIT 5,H},
+      // 0x6D => instruction!{r, mm => BIT 5,L},
   // 0x6E => instruction!{r, mm => BIT 5,(HL)},
   // 0x6F => instruction!{r, mm => BIT 5,A},
 
@@ -602,16 +611,16 @@ impl Processor {
   // 0x71 => instruction!{r, mm => BIT 6,C},
   // 0x72 => instruction!{r, mm => BIT 6,D},
   // 0x73 => instruction!{r, mm => BIT 6,E},
-  // 0x74 => instruction!{r, mm => BIT 6,H},
-  // 0x75 => instruction!{r, mm => BIT 6,L},
-  // 0x76 => instruction!{r, mm => BIT 6,(HL)},
-  // 0x77 => instruction!{r, mm => BIT 6,A},
-  // 0x78 => instruction!{r, mm => BIT 7,B},
-  // 0x79 => instruction!{r, mm => BIT 7,C},
-  // 0x7A => instruction!{r, mm => BIT 7,D},
-  // 0x7B => instruction!{r, mm => BIT 7,E},
-  // 0x7C => instruction!{r, mm => BIT 7,H},
-  // 0x7D => instruction!{r, mm => BIT 7,L},
+      0x74 => instruction!{r, mm => BIT 6,H},
+      // 0x75 => instruction!{r, mm => BIT 6,L},
+      // 0x76 => instruction!{r, mm => BIT 6,(HL)},
+      // 0x77 => instruction!{r, mm => BIT 6,A},
+      // 0x78 => instruction!{r, mm => BIT 7,B},
+      // 0x79 => instruction!{r, mm => BIT 7,C},
+      // 0x7A => instruction!{r, mm => BIT 7,D},
+      // 0x7B => instruction!{r, mm => BIT 7,E},
+      0x7C => instruction!{r, mm => BIT 7,H},
+      // 0x7D => instruction!{r, mm => BIT 7,L},
   // 0x7E => instruction!{r, mm => BIT 7,(HL)},
   // 0x7F => instruction!{r, mm => BIT 7,A},
 
@@ -751,9 +760,9 @@ impl Processor {
   // 0xFE => instruction!{r, mm => SET 7,(HL)},
   // 0xFF => instruction!{r, mm => SET 7,A},
   //
-  //     _ => panic!("Unsupported instruction 0xCB{:02X}", opcode),
-  //   }
-  // }
+      _ => panic!("Unsupported instruction 0xCB{:02X}", opcode),
+    }
+  }
 
   fn stack_push_u16(r: &mut Registers, mm: &mut MemoryMap, value: u16) {
     r.sp -= size_of_val(&value) as u16;

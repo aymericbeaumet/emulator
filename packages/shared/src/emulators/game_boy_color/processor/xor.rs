@@ -7,7 +7,7 @@ impl Instruction<XOR, A, Void> for Processor {
     println!("XOR A=0x{:02X}", a);
     let a = a ^ a;
     r.set_a(a);
-    r.set_flag(Flag::Z, a != 0);
+    r.set_flag(Flag::Z, a == 0);
     r.set_flag(Flag::N, false);
     r.set_flag(Flag::H, false);
     r.set_flag(Flag::C, false);
