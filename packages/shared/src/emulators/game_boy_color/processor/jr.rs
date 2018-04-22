@@ -8,12 +8,13 @@ impl Instruction<JR, NZ, R8> for Processor {
       return 8;
     }
     let r8: i8 = Processor::eat(r, mm);
-    println!("JR NZ 0x{:02X}", r8);
-    r.pc = (if r8 >= 0 {
+    println!("JR Z 0x{:02X}", r8);
+    let pc = if r8 >= 0 {
       r.pc + r8 as u16
     } else {
       r.pc - (-r8) as u16
-    }) - 2;
+    };
+    r.pc = pc;
     12
   }
 }
@@ -26,11 +27,12 @@ impl Instruction<JR, Z, R8> for Processor {
     }
     let r8: i8 = Processor::eat(r, mm);
     println!("JR Z 0x{:02X}", r8);
-    r.pc = (if r8 >= 0 {
+    let pc = if r8 >= 0 {
       r.pc + r8 as u16
     } else {
       r.pc - (-r8) as u16
-    }) - 2;
+    };
+    r.pc = pc;
     12
   }
 }

@@ -9,6 +9,7 @@ mod ld;
 mod ldh;
 mod ldi;
 mod ret;
+mod stop;
 mod xor;
 
 use std::mem::size_of_val;
@@ -34,6 +35,7 @@ pub mod instructions {
   pub enum LDH {}
   pub enum LDI {}
   pub enum RET {}
+  pub enum STOP {}
   pub enum XOR {}
 }
 
@@ -226,23 +228,22 @@ impl Processor {
       0x0D => instruction!{r, mm => DEC C},
       0x0E => instruction!{r, mm => LD C,D8},
       // 0x0F => instruction!{r, mm => RRCA},
-
-    // 0x10 => instruction!{r, mm => STOP 0},
-    // 0x11 => instruction!{r, mm => LD DE,D16},
-    // 0x12 => instruction!{r, mm => LD (DE),A},
-    // 0x13 => instruction!{r, mm => INC DE},
-    // 0x14 => instruction!{r, mm => INC D},
-    // 0x15 => instruction!{r, mm => DEC D},
-    // 0x16 => instruction!{r, mm => LD D,D8},
-    // 0x17 => instruction!{r, mm => RLA},
-    // 0x18 => instruction!{r, mm => JR R8},
-    // 0x19 => instruction!{r, mm => ADD HL,DE},
-    // 0x1A => instruction!{r, mm => LD A,(DE)},
-    // 0x1B => instruction!{r, mm => DEC DE},
-    // 0x1C => instruction!{r, mm => INC E},
-    // 0x1D => instruction!{r, mm => DEC E},
-    // 0x1E => instruction!{r, mm => LD E,D8},
-    // 0x1F => instruction!{r, mm => RRA},
+      0x10 => Processor::process_instruction_stop(r, mm),
+      // 0x11 => instruction!{r, mm => LD DE,D16},
+      // 0x12 => instruction!{r, mm => LD (DE),A},
+      // 0x13 => instruction!{r, mm => INC DE},
+      // 0x14 => instruction!{r, mm => INC D},
+      // 0x15 => instruction!{r, mm => DEC D},
+      // 0x16 => instruction!{r, mm => LD D,D8},
+      // 0x17 => instruction!{r, mm => RLA},
+      // 0x18 => instruction!{r, mm => JR R8},
+      // 0x19 => instruction!{r, mm => ADD HL,DE},
+      // 0x1A => instruction!{r, mm => LD A,(DE)},
+      // 0x1B => instruction!{r, mm => DEC DE},
+      // 0x1C => instruction!{r, mm => INC E},
+      // 0x1D => instruction!{r, mm => DEC E},
+      // 0x1E => instruction!{r, mm => LD E,D8},
+      // 0x1F => instruction!{r, mm => RRA},
       0x20 => instruction!{r, mm => JR NZ,R8},
       0x21 => instruction!{r, mm => LD HL,D16},
       0x22 => instruction!{r, mm => LDI (HL),A},
@@ -483,6 +484,10 @@ impl Processor {
       //
       _ => panic!("Unsupported instruction 0x{:02X}", opcode),
     }
+  }
+
+  fn process_instruction_stop(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
+    instruction!{r, mm => STOP 0}
   }
 
   fn process_instruction_cb(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
@@ -760,7 +765,7 @@ impl Processor {
   // 0xFE => instruction!{r, mm => SET 7,(HL)},
   // 0xFF => instruction!{r, mm => SET 7,A},
   //
-      _ => panic!("Unsupported instruction 0xCB{:02X}", opcode),
+      _ => panic!("Unsupported CB instruction 0x{:02X}", opcode),
     }
   }
 
