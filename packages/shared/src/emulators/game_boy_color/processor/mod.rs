@@ -200,7 +200,6 @@ impl Processor {
 
   fn process_instruction(r: &mut Registers, mm: &mut MemoryMap) -> Cycle {
     let opcode: u8 = Processor::eat(r, mm);
-    println!("[Opcode] 0x{:02X}", opcode);
     match opcode {
       // 0x00 => instruction!{r, mm => NOP},
       // 0x01 => instruction!{r, mm => LD (BC),D16},
@@ -479,7 +478,6 @@ impl Processor {
 
   // fn process_instruction_cb(&mut self) -> u8 {
   //   let opcode = Processor::eat();
-  //   println!("[Opcode] 0x{:02X}", opcode);
   //   match opcode {
   // 0x00 => instruction!{r, mm => RLC B},
   // 0x01 => instruction!{r, mm => RLC C},

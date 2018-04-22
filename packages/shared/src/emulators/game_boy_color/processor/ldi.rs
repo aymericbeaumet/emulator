@@ -4,7 +4,9 @@ use super::{instructions::*, operands::*, Cycle, Instruction, MemoryMap, Process
 impl Instruction<LDI, Pointer<HL>, A> for Processor {
   fn instruction(r: &mut Registers, mm: &mut MemoryMap, _: Pointer<HL>, _: A) -> Cycle {
     let hl = r.get_hl();
-    mm.write(hl, r.get_a());
+    let a = r.get_a();
+    println!("LDI (HL=0x{:04X}) A=0x{:02X}", hl, a);
+    mm.write(hl, a);
     r.set_hl(hl + 1);
     8
   }

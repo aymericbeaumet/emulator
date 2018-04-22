@@ -194,18 +194,16 @@ impl Registers {
   }
 
   pub fn dump(&self) {
-    print!(
-      "[Registers] AF=0x{:04X} (Z={}, N={}, H={}, C={})",
-      self.af,
+    println!(
+      "[Registers] AF=0x{:04X} BC=0x{:04X} DE=0x{:04X} HL=0x{:04X} SP=0x{:04X} PC=0x{:04X}",
+      self.af, self.bc, self.de, self.hl, self.sp, self.pc
+    );
+    println!(
+      "[Flags] Z={}, N={}, H={}, C={}",
       if self.get_flag(Flag::Z) { 1 } else { 0 },
       if self.get_flag(Flag::N) { 1 } else { 0 },
       if self.get_flag(Flag::H) { 1 } else { 0 },
-      if self.get_flag(Flag::C) { 1 } else { 0 }
-    );
-    print!(" BC=0x{:04X}", self.bc);
-    print!(" DE=0x{:04X}", self.de);
-    print!(" HL=0x{:04X}", self.hl);
-    print!(" SP=0x{:04X}", self.sp);
-    println!(" PC=0x{:04X}", self.pc);
+      if self.get_flag(Flag::C) { 1 } else { 0 },
+    )
   }
 }

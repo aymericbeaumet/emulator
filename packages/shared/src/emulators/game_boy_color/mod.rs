@@ -45,6 +45,7 @@ impl GameBoyColor {
     self.memory_map.write(0x0000, BIOS);
     self.registers.reset();
     loop {
+      println!("---");
       self.registers.dump();
       let time = Instant::now();
       let cycles = Processor::step(&mut self.registers, &mut self.memory_map);

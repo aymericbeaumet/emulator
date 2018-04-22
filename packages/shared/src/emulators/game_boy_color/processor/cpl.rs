@@ -7,6 +7,7 @@ impl Instruction<CPL, Void, Void> for Processor {
     r.set_a(!a);
     r.set_flag(Flag::N, true);
     r.set_flag(Flag::H, true);
+    println!("CPL");
     4
   }
 }
