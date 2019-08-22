@@ -1,0 +1,12 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json",
+        "packages/client-cli/package.json",
+        "packages/client-desktop/package.json",
+        "packages/shared/package.json"
+      ]
+    }
+  }
+}
